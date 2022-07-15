@@ -10,60 +10,32 @@ class ThreeByThreeBoard(IBoard):
             shape=(self._board_size, self._board_size), dtype=int)
         self._board.fill(0)
 
+    def _get_states(self, points: list[tuple[int, int]]) -> list[int]:
+        result = []
+        for pair in points:
+            y = pair[0]
+            x = pair[1]
+            result += [self._board[x, y]]
+        return result
+
     def check_victory(self) -> int:
-        # По строкам
-        for i in range(0, self._board_size-1):
-            beaten_cross: int = 0
-            beaten_zero: int = 0
-            for j in range(0, self._board_size-1):
-                if self._board[i, j] == 1:
-                    beaten_cross += 1
-                elif self._board[i, j] == 2:
-                    beaten_zero += 1
-                if beaten_cross == self._board_size:
-                    return 1
-                elif beaten_zero == self._board_size:
-                    return 2
+        victory_combos = np.array([[(0, 0), (0, 1), (0, 2)],
+                                   [(1, 0), (1, 1), (1, 2)],
+                                   [(2, 0), (2, 1), (2, 2)],
 
-        # По столбцам
-        for j in range(0, self._board_size-1):
-            beaten_cross: int = 0
-            beaten_zero: int = 0
-            for i in range(0, self._board_size-1):
-                if self._board[i, j] == 1:
-                    beaten_cross += 1
-                elif self._board[i, j] == 2:
-                    beaten_zero += 1
-                if beaten_cross == self._board_size:
-                    return 1
-                elif beaten_zero == self._board_size:
-                    return 2
+                                   [(0, 0), (1, 0), (2, 0)],
+                                   [(0, 1), (1, 1), (2, 1)],
+                                   [(0, 2), (1, 2), (2, 2)],
 
-        # По диагоналям
-        for i in range(0, self._board_size-1):
-            beaten_cross: int = 0
-            beaten_zero: int = 0
-            if self._board[i, i] == 1:
-                beaten_cross += 1
-            elif self._board[i, i] == 2:
-                beaten_zero += 1
-            if beaten_cross == self._board_size:
-                return 1
-            elif beaten_zero == self._board_size:
-                return 2
-        for i in range(self._board_size-1, 0, -1):
-            beaten_cross: int = 0
-            beaten_zero: int = 0
-            if self._board[i, i] == 1:
-                beaten_cross += 1
-            elif self._board[i, i] == 2:
-                beaten_zero += 1
-            if beaten_cross == self._board_size:
-                return 1
-            elif beaten_zero == self._board_size:
-                return 2
-
-        return 0
+                                   [(0, 0), (1, 1), (2, 2)],
+                                   [(2, 2), (1, 1), (0, 0)]])
+        results = [self._get_states(x) for x in victory_combos]
+        if [1, 1, 1] in results:
+            return 1
+        elif [2, 2, 2] in results:
+            return 2
+        else:
+            return 0
 
     def make_move(self, point: tuple[int, int], player: int) -> bool:
         y = point[0]

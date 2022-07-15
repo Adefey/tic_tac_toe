@@ -2,6 +2,7 @@ from abc import ABC
 from enum import Enum
 import numpy as np
 
+
 class IBoard(ABC):
 
     def check_victory(self) -> int:
